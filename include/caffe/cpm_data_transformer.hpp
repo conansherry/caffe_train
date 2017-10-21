@@ -2,7 +2,6 @@
 #define CAFFE_CPM_DATA_TRANSFORMER_HPP
 
 #include <vector>
-#include <opencv2/core/core.hpp>
 #include <opencv2/opencv.hpp>
 using namespace cv;
 
