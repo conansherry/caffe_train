@@ -126,6 +126,7 @@ void CPMDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
   const int batch_size = this->layer_param_.data_param().batch_size();
   const int crop_size = this->layer_param_.cpm_transform_param().crop_size();
   bool force_color = this->layer_param_.data_param().force_encoded_color();
+  LOG(INFO) << "batch_size = " << batch_size << " crop_size = " << crop_size;
   if (batch_size == 1 && crop_size == 0) {
     Datum& datum = *(reader_.full().peek());
     if (datum.encoded()) {
