@@ -1,5 +1,5 @@
 #ifdef USE_OPENCV
-#include <opencv2/core/core.hpp>
+#include <opencv2/opencv.hpp>
 #endif  // USE_OPENCV
 #include <stdint.h>
 
@@ -190,6 +190,7 @@ void CPMDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
         &(this->transformed_label_), cnt);
       ++cnt;
     }
+
     // if (this->output_labels_) {
     //   top_label[item_id] = datum.label();
     // }
@@ -197,6 +198,36 @@ void CPMDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
 
     reader_.free().push(const_cast<Datum*>(&datum));
   }
+
+    int num_sample = batch->data_.num();
+    LOG(INFO) << "num sample " << num_sample;
+    int offset = 368 * 368;
+    int label_offset = 46 * 46;
+    for(int k = 0; k < num_sample; k++)
+{
+  cv::Mat tmp_image_b(368, 368, CV_32FC1, top_data + k * 3 * offset); 
+  cv::Mat tmp_image_g(368, 368, CV_32FC1, top_data + (k * 3 + 1) * offset);
+  cv::Mat tmp_image_r(368, 368, CV_32FC1, top_data + (k * 3 + 2) * offset);
+  std::vector<cv::Mat> tmp_image;
+  tmp_image.push_back(tmp_image_b);
+  tmp_image.push_back(tmp_image_g);
+  tmp_image.push_back(tmp_image_r);
+  cv::Mat image;
+  cv::merge(tmp_image, image);
+  image = image * 256. + 128.;
+  image.convertTo(image, CV_8U); 
+  cv::imwrite("test_data.png", image);
+  cv::Mat heatmap_bg(46, 46, CV_32FC1, top_label + k * 41 * label_offset + 40 * label_offset);
+  cv::Mat tmp;
+  cv::resize(heatmap_bg, tmp, Size(), 8, 8);
+  heatmap_bg = tmp;
+  heatmap_bg = heatmap_bg * 255.;
+  heatmap_bg.convertTo(heatmap_bg, CV_8U);
+  cv::cvtColor(heatmap_bg, heatmap_bg, cv::COLOR_GRAY2BGR);
+  cv::addWeighted(heatmap_bg, 0.5, image, 0.5, 0, heatmap_bg);
+  cv::imwrite("test_label.png", heatmap_bg);
+}
+
   batch_timer.Stop();
 
   VLOG(2) << "Prefetch batch: " << batch_timer.MilliSeconds() << " ms.";

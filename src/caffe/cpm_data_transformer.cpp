@@ -449,17 +449,14 @@ template<typename Dtype> void CPMDataTransformer<Dtype>::Transform_nv(const Datu
 	cv::Mat mask_miss, mask_all;
 	int select_people = rand() % meta.numPeople;
     as.scale = augmentation_scale(img, img_temp, mask_miss, mask_all, meta, mode, select_people);
-    cv::imwrite("after_scale.png", img_temp);
     //LOG(INFO) << meta.joint_self.joints.size();
     //LOG(INFO) << meta.joint_self.joints[0];
     as.degree = augmentation_rotate(img_temp, img_temp2, mask_miss, mask_all, meta, mode, select_people);
-    cv::imwrite("after_rotate.png", img_temp2);
     //LOG(INFO) << meta.joint_self.joints.size();
     //LOG(INFO) << meta.joint_self.joints[0];
     if(0 && param_.visualize()) 
       visualize(img_temp2, meta, as);
     as.crop = augmentation_croppad(img_temp2, img_temp3, mask_miss, mask_miss_aug, mask_all, mask_all_aug, meta, mode, select_people);
-    cv::imwrite("after_crop.png", img_temp3);
     //LOG(INFO) << meta.joint_self.joints.size();
     //LOG(INFO) << meta.joint_self.joints[0];
     if(0 && param_.visualize()) 
@@ -548,6 +545,17 @@ float CPMDataTransformer<Dtype>::augmentation_scale(Mat& img_src, Mat& img_temp,
 	meta.all_rects[i] = cv::Rect((int)(meta.all_rects[i].x * scale), (int)(meta.all_rects[i].y * scale),
 	(int)(meta.all_rects[i].width * scale), (int)(meta.all_rects[i].height * scale));
   }
+
+cv::Mat save_img = img_temp.clone();
+  for(int i = 0; i < meta.numPeople; i++)
+{
+  for(int j = 0; j < np_in_lmdb; j++)
+{
+  cv::circle(save_img, cv::Point(meta.all_joints[i].joints[j].x, meta.all_joints[i].joints[j].y), 1, cv::Scalar(0, 255, 0), 2);
+}
+cv::rectangle(save_img, meta.all_rects[i], cv::Scalar(0, 0, 255), 2);
+}
+cv::imwrite("after_scale.png", save_img);
   return scale_multiplier;
 }
 
@@ -595,6 +603,16 @@ Size CPMDataTransformer<Dtype>::augmentation_croppad(Mat& img_src, Mat& img_dst,
 	meta.all_rects[i].y += offset_up;
   }
 
+cv::Mat save_img = img_dst.clone();
+  for(int i = 0; i < meta.numPeople; i++)
+{
+  for(int j = 0; j < np_in_lmdb; j++)
+{
+  cv::circle(save_img, cv::Point(meta.all_joints[i].joints[j].x, meta.all_joints[i].joints[j].y), 1, cv::Scalar(0, 255, 0), 2);
+}
+cv::rectangle(save_img, meta.all_rects[i], cv::Scalar(0, 0, 255), 2);
+}
+cv::imwrite("after_crop.png", save_img);
   return Size(x_offset, y_offset);
 }
 
@@ -612,6 +630,8 @@ bool CPMDataTransformer<Dtype>::augmentation_flip(Mat& img_src, Mat& img_aug, Ma
     doflip = 0;
     LOG(INFO) << "Unhandled exception!!!!!!";
   }
+
+doflip = 1;
 
   if(doflip){
     flip(img_src, img_aug, 1);
@@ -632,6 +652,19 @@ bool CPMDataTransformer<Dtype>::augmentation_flip(Mat& img_src, Mat& img_aug, Ma
   else {
     img_aug = img_src.clone();
   }
+cv::Mat save_img = img_aug.clone();
+  for(int i = 0; i < meta.numPeople; i++)
+{
+  for(int j = 0; j < np_in_lmdb; j++)
+{
+  char tag[512];
+  sprintf(tag, "%d", j);
+  cv::putText(save_img, tag, cv::Point(meta.all_joints[i].joints[j].x, meta.all_joints[i].joints[j].y), 1, 1, cv::Scalar(255, 0, 0));
+  cv::circle(save_img, cv::Point(meta.all_joints[i].joints[j].x, meta.all_joints[i].joints[j].y), 1, cv::Scalar(0, 255, 0), 2);
+}
+cv::rectangle(save_img, meta.all_rects[i], cv::Scalar(0, 0, 255), 2);
+}
+cv::imwrite("after_flip.png", save_img);
   return doflip;
 }
 
@@ -688,6 +721,17 @@ rect_coords.push_back(cv::Point2f(x4, y4));
 	RotatePoint(rect_coords[3], R);
 	meta.all_rects[i] = cv::boundingRect(rect_coords);
   }
+
+cv::Mat save_img = img_dst.clone();
+  for(int i = 0; i < meta.numPeople; i++)
+{
+  for(int j = 0; j < np_in_lmdb; j++)
+{
+  cv::circle(save_img, cv::Point(meta.all_joints[i].joints[j].x, meta.all_joints[i].joints[j].y), 1, cv::Scalar(0, 255, 0), 2);
+}
+cv::rectangle(save_img, meta.all_rects[i], cv::Scalar(0, 0, 255), 2);
+}
+cv::imwrite("after_rotate.png", save_img);
   return degree;
 }
 // end here
@@ -1124,13 +1168,14 @@ void CPMDataTransformer<Dtype>::generateLabelMap(Dtype* transformed_label, Mat& 
 		}
 	  }
     }
+    LOG(INFO) << "test#####################";
 
     //put background channel
     for (int g_y = 0; g_y < grid_y; g_y++){
       for (int g_x = 0; g_x < grid_x; g_x++){
         float maximum = 0;
         //second background channel
-        for (int i = 26; i < 41; i++){
+        for (int i = 26; i < 40; i++){
           maximum = (maximum > transformed_label[i*channelOffset + g_y*grid_x + g_x]) ? maximum : transformed_label[i*channelOffset + g_y*grid_x + g_x];
         }
         transformed_label[(40)*channelOffset + g_y*grid_x + g_x] = max(1.0-maximum, 0.0);
