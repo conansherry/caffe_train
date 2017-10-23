@@ -390,7 +390,7 @@ template<typename Dtype> void CPMDataTransformer<Dtype>::Transform_nv(const Datu
   const string& data = datum.data();
   
   std::string img_name = DecodeString(data, 0);
-  cv::Mat datum_img = cv::imread("/home/qinweining/ssd/ai_challenger_keypoint_validation_20170911/keypoint_validation_images_20170911/" + img_name + ".jpg");
+  cv::Mat datum_img = cv::imread("/home/qinweining/ssd/ai_challenger_keypoint_train_20170909/keypoint_train_images_20170902/" + img_name + ".jpg");
   //LOG(INFO) << "read img " << "/home/qinweining/ssd/ai_challenger_keypoint_validation_20170911/keypoint_validation_images_20170911/" + img_name + ".jpg" << " size " << datum_img.size();
   const int datum_channels = datum_img.channels();
   const int datum_height = datum_img.rows;
