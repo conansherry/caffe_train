@@ -126,7 +126,7 @@ void CPMDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
   const int batch_size = this->layer_param_.data_param().batch_size();
   const int crop_size = this->layer_param_.cpm_transform_param().crop_size();
   bool force_color = this->layer_param_.data_param().force_encoded_color();
-  LOG(INFO) << "batch_size = " << batch_size << " crop_size = " << crop_size;
+  //LOG(INFO) << "batch_size = " << batch_size << " crop_size = " << crop_size;
   if (batch_size == 1 && crop_size == 0) {
     Datum& datum = *(reader_.full().peek());
     if (datum.encoded()) {
@@ -198,7 +198,7 @@ void CPMDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
 
     reader_.free().push(const_cast<Datum*>(&datum));
   }
-
+/*
     int num_sample = batch->data_.num();
     LOG(INFO) << "num sample " << num_sample;
     int offset = 368 * 368;
@@ -227,7 +227,7 @@ void CPMDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
   cv::addWeighted(heatmap_bg, 0.5, image, 0.5, 0, heatmap_bg);
   cv::imwrite("test_label.png", heatmap_bg);
 }
-
+*/
   batch_timer.Stop();
 
   VLOG(2) << "Prefetch batch: " << batch_timer.MilliSeconds() << " ms.";

@@ -391,7 +391,7 @@ template<typename Dtype> void CPMDataTransformer<Dtype>::Transform_nv(const Datu
   
   std::string img_name = DecodeString(data, 0);
   cv::Mat datum_img = cv::imread("/home/qinweining/ssd/ai_challenger_keypoint_validation_20170911/keypoint_validation_images_20170911/" + img_name + ".jpg");
-  LOG(INFO) << "read img " << "/home/qinweining/ssd/ai_challenger_keypoint_validation_20170911/keypoint_validation_images_20170911/" + img_name + ".jpg" << " size " << datum_img.size();
+  //LOG(INFO) << "read img " << "/home/qinweining/ssd/ai_challenger_keypoint_validation_20170911/keypoint_validation_images_20170911/" + img_name + ".jpg" << " size " << datum_img.size();
   const int datum_channels = datum_img.channels();
   const int datum_height = datum_img.rows;
   const int datum_width = datum_img.cols;
@@ -502,7 +502,7 @@ template<typename Dtype> void CPMDataTransformer<Dtype>::Transform_nv(const Datu
     }
   }
 
-  cv::imwrite("save_xxx.png", img_aug);
+  //cv::imwrite("save_xxx.png", img_aug);
 
   //putGaussianMaps(transformed_data + 3*offset, meta.objpos, 1, img_aug.cols, img_aug.rows, param_.sigma_center());
   //LOG(INFO) << "image transformation done!";
@@ -545,7 +545,7 @@ float CPMDataTransformer<Dtype>::augmentation_scale(Mat& img_src, Mat& img_temp,
 	meta.all_rects[i] = cv::Rect((int)(meta.all_rects[i].x * scale), (int)(meta.all_rects[i].y * scale),
 	(int)(meta.all_rects[i].width * scale), (int)(meta.all_rects[i].height * scale));
   }
-
+/*
 cv::Mat save_img = img_temp.clone();
   for(int i = 0; i < meta.numPeople; i++)
 {
@@ -556,6 +556,7 @@ cv::Mat save_img = img_temp.clone();
 cv::rectangle(save_img, meta.all_rects[i], cv::Scalar(0, 0, 255), 2);
 }
 cv::imwrite("after_scale.png", save_img);
+*/
   return scale_multiplier;
 }
 
@@ -602,7 +603,7 @@ Size CPMDataTransformer<Dtype>::augmentation_croppad(Mat& img_src, Mat& img_dst,
 	meta.all_rects[i].x += offset_left;
 	meta.all_rects[i].y += offset_up;
   }
-
+/*
 cv::Mat save_img = img_dst.clone();
   for(int i = 0; i < meta.numPeople; i++)
 {
@@ -613,6 +614,7 @@ cv::Mat save_img = img_dst.clone();
 cv::rectangle(save_img, meta.all_rects[i], cv::Scalar(0, 0, 255), 2);
 }
 cv::imwrite("after_crop.png", save_img);
+*/
   return Size(x_offset, y_offset);
 }
 
@@ -652,6 +654,7 @@ doflip = 1;
   else {
     img_aug = img_src.clone();
   }
+  /*
 cv::Mat save_img = img_aug.clone();
   for(int i = 0; i < meta.numPeople; i++)
 {
@@ -665,6 +668,7 @@ cv::Mat save_img = img_aug.clone();
 cv::rectangle(save_img, meta.all_rects[i], cv::Scalar(0, 0, 255), 2);
 }
 cv::imwrite("after_flip.png", save_img);
+*/
   return doflip;
 }
 
@@ -721,7 +725,7 @@ rect_coords.push_back(cv::Point2f(x4, y4));
 	RotatePoint(rect_coords[3], R);
 	meta.all_rects[i] = cv::boundingRect(rect_coords);
   }
-
+/*
 cv::Mat save_img = img_dst.clone();
   for(int i = 0; i < meta.numPeople; i++)
 {
@@ -732,6 +736,7 @@ cv::Mat save_img = img_dst.clone();
 cv::rectangle(save_img, meta.all_rects[i], cv::Scalar(0, 0, 255), 2);
 }
 cv::imwrite("after_rotate.png", save_img);
+*/
   return degree;
 }
 // end here
@@ -1168,7 +1173,7 @@ void CPMDataTransformer<Dtype>::generateLabelMap(Dtype* transformed_label, Mat& 
 		}
 	  }
     }
-    LOG(INFO) << "test#####################";
+    //LOG(INFO) << "test#####################";
 
     //put background channel
     for (int g_y = 0; g_y < grid_y; g_y++){
