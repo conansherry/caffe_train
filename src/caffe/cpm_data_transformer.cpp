@@ -447,15 +447,16 @@ template<typename Dtype> void CPMDataTransformer<Dtype>::Transform_nv(const Datu
   // We only do random transform as augmentation when training.
   if (phase_ == TRAIN) {
 	cv::Mat mask_miss, mask_all;
-    as.scale = augmentation_scale(img, img_temp, mask_miss, mask_all, meta, mode);
+	int select_people = rand() % meta.numPeople;
+    as.scale = augmentation_scale(img, img_temp, mask_miss, mask_all, meta, mode, select_people);
     //LOG(INFO) << meta.joint_self.joints.size();
     //LOG(INFO) << meta.joint_self.joints[0];
-    as.degree = augmentation_rotate(img_temp, img_temp2, mask_miss, mask_all, meta, mode);
+    as.degree = augmentation_rotate(img_temp, img_temp2, mask_miss, mask_all, meta, mode, select_people);
     //LOG(INFO) << meta.joint_self.joints.size();
     //LOG(INFO) << meta.joint_self.joints[0];
     if(0 && param_.visualize()) 
       visualize(img_temp2, meta, as);
-    as.crop = augmentation_croppad(img_temp2, img_temp3, mask_miss, mask_miss_aug, mask_all, mask_all_aug, meta, mode);
+    as.crop = augmentation_croppad(img_temp2, img_temp3, mask_miss, mask_miss_aug, mask_all, mask_all_aug, meta, mode, select_people);
     //LOG(INFO) << meta.joint_self.joints.size();
     //LOG(INFO) << meta.joint_self.joints[0];
     if(0 && param_.visualize()) 
@@ -515,7 +516,7 @@ template<typename Dtype> void CPMDataTransformer<Dtype>::Transform_nv(const Datu
 
 // include mask_miss
 template<typename Dtype>
-float CPMDataTransformer<Dtype>::augmentation_scale(Mat& img_src, Mat& img_temp, Mat& mask_miss, Mat& mask_all, MetaData& meta, int mode) {
+float CPMDataTransformer<Dtype>::augmentation_scale(Mat& img_src, Mat& img_temp, Mat& mask_miss, Mat& mask_all, MetaData& meta, int mode, int select_people) {
   float dice = static_cast <float> (rand()) / static_cast <float> (RAND_MAX); //[0,1]
   float scale_multiplier;
   //float scale = (param_.scale_max() - param_.scale_min()) * dice + param_.scale_min(); //linear shear into [scale_min, scale_max]
@@ -528,6 +529,7 @@ float CPMDataTransformer<Dtype>::augmentation_scale(Mat& img_src, Mat& img_temp,
     scale_multiplier = (param_.scale_max() - param_.scale_min()) * dice2 + param_.scale_min(); //linear shear into [scale_min, scale_max]
   }
   float scale_abs = param_.target_dist()/meta.scale_self;
+  float scale_abs = 368 * param_.target_dist() / (meta.all_rects[select_people].width);
   float scale = scale_abs * scale_multiplier;
   resize(img_src, img_temp, Size(), scale, scale, INTER_CUBIC);
 
@@ -556,7 +558,6 @@ Size CPMDataTransformer<Dtype>::augmentation_croppad(Mat& img_src, Mat& img_dst,
 
   //LOG(INFO) << "Size of img_temp is " << img_temp.cols << " " << img_temp.rows;
   //LOG(INFO) << "ROI is " << x_offset << " " << y_offset << " " << min(800, img_temp.cols) << " " << min(256, img_temp.rows);
-  int select_people = rand() % meta.numPeople;
   meta.objpos = (cv::Point2f(meta.all_rects[select_people].x, meta.all_rects[select_people].y) +
   (cv::Point2f(meta.all_rects[select_people].x + meta.all_rects[select_people].width, meta.all_rects[select_people].y + meta.all_rects[select_people].height))) / 2;
   Point2i center = meta.objpos + Point2f(x_offset, y_offset);

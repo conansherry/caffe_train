@@ -173,9 +173,9 @@ class CPMDataTransformer {
   Size augmentation_croppad(Mat& img_temp, Mat& img_aug, MetaData& meta);
 
   bool augmentation_flip(Mat& img, Mat& img_aug, Mat& mask_miss, Mat& mask_all, MetaData& meta, int mode);
-  float augmentation_rotate(Mat& img_src, Mat& img_aug, Mat& mask_miss, Mat& mask_all, MetaData& meta, int mode);
-  float augmentation_scale(Mat& img, Mat& img_temp, Mat& mask_miss, Mat& mask_all, MetaData& meta, int mode);
-  Size augmentation_croppad(Mat& img_temp, Mat& img_aug, Mat& mask_miss, Mat& mask_miss_aug, Mat& mask_all, Mat& mask_all_aug, MetaData& meta, int mode);
+  float augmentation_rotate(Mat& img_src, Mat& img_aug, Mat& mask_miss, Mat& mask_all, MetaData& meta, int mode, int select_people);
+  float augmentation_scale(Mat& img, Mat& img_temp, Mat& mask_miss, Mat& mask_all, MetaData& meta, int mode, int select_people);
+  Size augmentation_croppad(Mat& img_temp, Mat& img_aug, Mat& mask_miss, Mat& mask_miss_aug, Mat& mask_all, Mat& mask_all_aug, MetaData& meta, int mode, int select_people);
 
   void RotatePoint(Point2f& p, Mat R);
   bool onPlane(Point p, Size img_size);
