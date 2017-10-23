@@ -390,8 +390,8 @@ template<typename Dtype> void CPMDataTransformer<Dtype>::Transform_nv(const Datu
   const string& data = datum.data();
   
   std::string img_name = DecodeString(data, 0);
-  LOG(INFO) << "img_name = " << img_name;
   cv::Mat datum_img = cv::imread("/home/qinweining/ssd/ai_challenger_keypoint_validation_20170911/keypoint_validation_images_20170911/" + img_name + ".jpg");
+  LOG(INFO) << "read img " << "/home/qinweining/ssd/ai_challenger_keypoint_validation_20170911/keypoint_validation_images_20170911/" + img_name + ".jpg" << " size " << datum_img.size();
   const int datum_channels = datum_img.channels();
   const int datum_height = datum_img.rows;
   const int datum_width = datum_img.cols;
@@ -485,7 +485,7 @@ template<typename Dtype> void CPMDataTransformer<Dtype>::Transform_nv(const Datu
   //          << "); flip:" << as.flip << "; degree: " << as.degree;
 
   //copy transformed img (img_aug) into transformed_data, do the mean-subtraction here
-  offset = img_aug.rows * img_aug.cols;
+  int offset = img_aug.rows * img_aug.cols;
   int rezX = img_aug.cols;
   int rezY = img_aug.rows;
   int grid_x = rezX / stride;
@@ -615,7 +615,7 @@ bool CPMDataTransformer<Dtype>::augmentation_flip(Mat& img_src, Mat& img_aug, Ma
     {
       for(int j = 0; j < np_in_lmdb; j++)
 	  {
-	  	meta.all_joints[i].joints[j].x = w - 1 - meta.all_joints[i].joints[j].x
+	  	meta.all_joints[i].joints[j].x = w - 1 - meta.all_joints[i].joints[j].x;
 	  }
 	  swapLeftRight(meta.all_joints[i]);
 	  
@@ -671,7 +671,11 @@ float CPMDataTransformer<Dtype>::augmentation_rotate(Mat& img_src, Mat& img_dst,
 	y3 = meta.all_rects[i].y + meta.all_rects[i].height;
 	x4 = meta.all_rects[i].x + meta.all_rects[i].width;
 	y4 = meta.all_rects[i].y + meta.all_rects[i].height;
-	std::vector<cv::Point2f> rect_coords = {cv::Point2f(x1, y1), cv::Point2f(x2, y2), cv::Point2f(x3, y3), cv::Point2f(x4, y4)};
+	std::vector<cv::Point2f> rect_coords;//{cv::Point2f(x1, y1), cv::Point2f(x2, y2), cv::Point2f(x3, y3), cv::Point2f(x4, y4)};
+rect_coords.push_back(cv::Point2f(x1, y1));
+rect_coords.push_back(cv::Point2f(x2, y2));
+rect_coords.push_back(cv::Point2f(x3, y3));
+rect_coords.push_back(cv::Point2f(x4, y4));
 	RotatePoint(rect_coords[0], R);
 	RotatePoint(rect_coords[1], R);
 	RotatePoint(rect_coords[2], R);
