@@ -547,7 +547,7 @@ float CPMDataTransformer<Dtype>::augmentation_scale(Mat& img_src, Mat& img_temp,
 }
 
 template<typename Dtype>
-Size CPMDataTransformer<Dtype>::augmentation_croppad(Mat& img_src, Mat& img_dst, Mat& mask_miss, Mat& mask_miss_aug, Mat& mask_all, Mat& mask_all_aug, MetaData& meta, int mode) {
+Size CPMDataTransformer<Dtype>::augmentation_croppad(Mat& img_src, Mat& img_dst, Mat& mask_miss, Mat& mask_miss_aug, Mat& mask_all, Mat& mask_all_aug, MetaData& meta, int mode, int select_people) {
   float dice_x = static_cast <float> (rand()) / static_cast <float> (RAND_MAX); //[0,1]
   float dice_y = static_cast <float> (rand()) / static_cast <float> (RAND_MAX); //[0,1]
   int crop_x = param_.crop_size_x();
@@ -631,7 +631,7 @@ bool CPMDataTransformer<Dtype>::augmentation_flip(Mat& img_src, Mat& img_aug, Ma
 }
 
 template<typename Dtype>
-float CPMDataTransformer<Dtype>::augmentation_rotate(Mat& img_src, Mat& img_dst, Mat& mask_miss, Mat& mask_all, MetaData& meta, int mode) {
+float CPMDataTransformer<Dtype>::augmentation_rotate(Mat& img_src, Mat& img_dst, Mat& mask_miss, Mat& mask_all, MetaData& meta, int mode, int select_people) {
   
   float degree;
   if(param_.aug_way() == "rand"){
