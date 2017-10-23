@@ -78,7 +78,7 @@ void CPMDataTransformer<Dtype>::ReadMetaData(MetaData& meta, const string& data,
 	DecodeFloats(data, offset3 + 2 * offset1 + i * offset1 + 4, &y1, 1);
 	DecodeFloats(data, offset3 + 2 * offset1 + i * offset1 + 8, &x2, 1);
 	DecodeFloats(data, offset3 + 2 * offset1 + i * offset1 + 12, &y2, 1);
-	meta.all_rects.push_back(cv::Rect(x1, y1, x2 - x1, y2 - y1));
+	meta.all_rects.push_back(cv::Rect_<float>(x1, y1, x2 - x1, y2 - y1));
   }
   for(int i = 0; i < meta.numPeople; i++)
   {
@@ -538,8 +538,8 @@ float CPMDataTransformer<Dtype>::augmentation_scale(Mat& img_src, Mat& img_temp,
 	{
 		meta.all_joints[i].joints[j] *= scale;
 	}
-	meta.all_rects[i] = cv::Rect(meta.all_rects[i].x * scale, meta.all_rects[i].y * meta.all_rects[i],
-	meta.all_rects[i].width * scale, meta.all_rects[i].height * scale);
+	meta.all_rects[i] = cv::Rect((int)(meta.all_rects[i].x * scale), (int)(meta.all_rects[i].y * scale),
+	(int)(meta.all_rects[i].width * scale), (int)(meta.all_rects[i].height * scale));
   }
   return scale_multiplier;
 }
