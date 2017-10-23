@@ -92,7 +92,7 @@ void CPMDataTransformer<Dtype>::ReadMetaData(MetaData& meta, const string& data,
 	  tmp_joints.joints.push_back(cv::Point2f(x, y));
 	  tmp_joints.isVisible.push_back(visible);
 	}
-	meta.all_joints.push_back(tmp_joints)
+	meta.all_joints.push_back(tmp_joints);
   }
 }
 
@@ -446,7 +446,7 @@ template<typename Dtype> void CPMDataTransformer<Dtype>::Transform_nv(const Datu
   VLOG(2) << "   input size (" << img.cols << ", " << img.rows << ")"; 
   // We only do random transform as augmentation when training.
   if (phase_ == TRAIN) {
-	  
+	cv::Mat mask_miss, mask_all;
     as.scale = augmentation_scale(img, img_temp, mask_miss, mask_all, meta, mode);
     //LOG(INFO) << meta.joint_self.joints.size();
     //LOG(INFO) << meta.joint_self.joints[0];
