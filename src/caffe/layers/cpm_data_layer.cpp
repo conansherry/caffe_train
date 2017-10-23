@@ -70,7 +70,7 @@ void CPMDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
       this->prefetch_[i].data_.Reshape(batch_size, 3, height, width);
     }
     //this->transformed_data_.Reshape(1, 4, height, width);
-    this->transformed_data_.Reshape(1, datum.channels(), height, width);
+    this->transformed_data_.Reshape(1, 3, height, width);
   }
   LOG(INFO) << "output data size: " << top[0]->num() << ","
       << top[0]->channels() << "," << top[0]->height() << ","

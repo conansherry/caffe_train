@@ -380,8 +380,8 @@ template<typename Dtype> void CPMDataTransformer<Dtype>::Transform_nv(const Datu
   //LOG(INFO) << "label shape: " << transformed_label->num() << " " << transformed_label->channels() << " " 
   //                             << transformed_label->height() << " " << transformed_label->width();
 
-  CHECK_EQ(datum_channels, 6);
-  CHECK_EQ(im_channels, 6);
+  CHECK_EQ(datum_channels, 1);
+  CHECK_EQ(im_channels, 3);
 
   ///CHECK_EQ(im_channels, 4);
   //CHECK_EQ(datum_channels, 4);
@@ -424,6 +424,11 @@ template<typename Dtype> void CPMDataTransformer<Dtype>::Transform_nv(const Datu
   MetaData meta;
   
   const string& data = datum.data();
+  
+  std::string img_name = DecodeString(data, 0);
+  LOG(INFO) << "img_name = " << img_name;
+  system("pause");
+  
   const int datum_channels = datum.channels();
   const int datum_height = datum.height();
   const int datum_width = datum.width();
