@@ -42,6 +42,7 @@ void CPMDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
   LOG(INFO) << datum.height() << " " << datum.width() << " " << datum.channels();
 
   bool force_color = this->layer_param_.data_param().force_encoded_color();
+  LOG(INFO) << "force_color = " << force_color;
   if ((force_color && DecodeDatum(&datum, true)) ||
       DecodeDatumNative(&datum)) {
     LOG(INFO) << "Decoding Datum";
@@ -64,9 +65,9 @@ void CPMDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
     const int width = this->phase_ != TRAIN ? datum.width() :
       this->layer_param_.cpm_transform_param().crop_size_x();
     LOG(INFO) << "PREFETCH_COUNT is " << this->PREFETCH_COUNT;
-    top[0]->Reshape(batch_size, datum.channels(), height, width);
+    top[0]->Reshape(batch_size, 3, height, width);
     for (int i = 0; i < this->PREFETCH_COUNT; ++i) {
-      this->prefetch_[i].data_.Reshape(batch_size, datum.channels(), height, width);
+      this->prefetch_[i].data_.Reshape(batch_size, 3, height, width);
     }
     //this->transformed_data_.Reshape(1, 4, height, width);
     this->transformed_data_.Reshape(1, datum.channels(), height, width);
@@ -84,12 +85,27 @@ void CPMDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
       this->layer_param_.cpm_transform_param().crop_size_x();
 
     int num_parts = this->layer_param_.cpm_transform_param().num_parts();
-    top[1]->Reshape(batch_size, 2*(num_parts+1), height/stride, width/stride);
+    top[1]->Reshape(batch_size, num_parts, height/stride, width/stride);
     for (int i = 0; i < this->PREFETCH_COUNT; ++i) {
-      this->prefetch_[i].label_.Reshape(batch_size, 2*(num_parts+1), height/stride, width/stride);
+      this->prefetch_[i].label_.Reshape(batch_size, num_parts, height/stride, width/stride);
     }
-    this->transformed_label_.Reshape(1, 2*(num_parts+1), height/stride, width/stride);
+    this->transformed_label_.Reshape(1, num_parts, height/stride, width/stride);
   }
+}
+
+template<typename Dtype>
+void DecodeFloats(const string& data, size_t idx, Dtype* pf, size_t len) {
+  memcpy(pf, const_cast<char*>(&data[idx]), len * sizeof(Dtype));
+}
+
+string DecodeString(const string& data, size_t idx) {
+  string result = "";
+  int i = 0;
+  while(data[idx+i] != 0){
+    result.push_back(char(data[idx+i]));
+    i++;
+  }
+  return result;
 }
 
 // This function is called on prefetch thread
@@ -119,6 +135,12 @@ void CPMDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
         DecodeDatumNative(&datum);
       }
     }
+	
+	const std::string& data = datum.data();
+	std::string img_name = DecodeString(data, 0);
+	LOG(INFO) << "img_name = " << img_name;
+	system("pause");
+	
     batch->data_.Reshape(1, datum.channels(),
         datum.height(), datum.width());
         this->transformed_data_.Reshape(1, datum.channels(),
