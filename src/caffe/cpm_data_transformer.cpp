@@ -414,7 +414,7 @@ template<typename Dtype> void CPMDataTransformer<Dtype>::Transform_nv(const Datu
   CPUTimer timer1;
   timer1.Start();
   //before any transformation, get the image from datum
-  Mat img = Mat::zeros(datum_height, datum_width, CV_8UC3);
+  Mat img = datum_img;
   
   //color, contract
   if(param_.do_clahe())
@@ -449,14 +449,17 @@ template<typename Dtype> void CPMDataTransformer<Dtype>::Transform_nv(const Datu
 	cv::Mat mask_miss, mask_all;
 	int select_people = rand() % meta.numPeople;
     as.scale = augmentation_scale(img, img_temp, mask_miss, mask_all, meta, mode, select_people);
+    cv::imwrite("after_scale.png", img_temp);
     //LOG(INFO) << meta.joint_self.joints.size();
     //LOG(INFO) << meta.joint_self.joints[0];
     as.degree = augmentation_rotate(img_temp, img_temp2, mask_miss, mask_all, meta, mode, select_people);
+    cv::imwrite("after_rotate.png", img_temp2);
     //LOG(INFO) << meta.joint_self.joints.size();
     //LOG(INFO) << meta.joint_self.joints[0];
     if(0 && param_.visualize()) 
       visualize(img_temp2, meta, as);
     as.crop = augmentation_croppad(img_temp2, img_temp3, mask_miss, mask_miss_aug, mask_all, mask_all_aug, meta, mode, select_people);
+    cv::imwrite("after_crop.png", img_temp3);
     //LOG(INFO) << meta.joint_self.joints.size();
     //LOG(INFO) << meta.joint_self.joints[0];
     if(0 && param_.visualize()) 
@@ -502,6 +505,8 @@ template<typename Dtype> void CPMDataTransformer<Dtype>::Transform_nv(const Datu
     }
   }
 
+  cv::imwrite("save_xxx.png", img_aug);
+
   //putGaussianMaps(transformed_data + 3*offset, meta.objpos, 1, img_aug.cols, img_aug.rows, param_.sigma_center());
   //LOG(INFO) << "image transformation done!";
   generateLabelMap(transformed_label, img_aug, meta);
@@ -528,7 +533,7 @@ float CPMDataTransformer<Dtype>::augmentation_scale(Mat& img_src, Mat& img_temp,
     float dice2 = static_cast <float> (rand()) / static_cast <float> (RAND_MAX); //[0,1]
     scale_multiplier = (param_.scale_max() - param_.scale_min()) * dice2 + param_.scale_min(); //linear shear into [scale_min, scale_max]
   }
-  float scale_abs = param_.target_dist()/meta.scale_self;
+  //float scale_abs = param_.target_dist()/meta.scale_self;
   float scale_abs = 368 * param_.target_dist() / (meta.all_rects[select_people].width);
   float scale = scale_abs * scale_multiplier;
   resize(img_src, img_temp, Size(), scale, scale, INTER_CUBIC);
@@ -1038,11 +1043,8 @@ void CPMDataTransformer<Dtype>::generateLabelMap(Dtype* transformed_label, Mat& 
 
   for (int g_y = 0; g_y < grid_y; g_y++){
     for (int g_x = 0; g_x < grid_x; g_x++){
-      for (int i = np+1; i < 2*(np+1); i++){
-        if (mode == 6 && i == (2*np + 1))
-          continue;
+      for(int i = 0; i < np; i++)
         transformed_label[i*channelOffset + g_y*grid_x + g_x] = 0;
-      }
     }
   }
 
