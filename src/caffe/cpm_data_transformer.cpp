@@ -538,7 +538,8 @@ float CPMDataTransformer<Dtype>::augmentation_scale(Mat& img_src, Mat& img_temp,
 	{
 		meta.all_joints[i].joints[j] *= scale;
 	}
-	meta.all_rects[i] *= scale;
+	meta.all_rects[i] = cv::Rect(meta.all_rects[i].x * scale, meta.all_rects[i].y * meta.all_rects[i],
+	meta.all_rects[i].width * scale, meta.all_rects[i].height * scale);
   }
   return scale_multiplier;
 }
@@ -1112,7 +1113,7 @@ void CPMDataTransformer<Dtype>::generateLabelMap(Dtype* transformed_label, Mat& 
 	  for(int j = 0; j < meta.numPeople; j++) {
 	    if(meta.all_joints[j].isVisible[mid_1[i]] != 3 && meta.all_joints[j].isVisible[mid_2[i]] !=3)
 		{
-		  putVecMaps(transformed_label + (2 * i) * channelOffset, transformed_label + (2 * i + 1) * channelOffset, count, meta.all_joints[j].joints[mid_1[i]], meta.all_joints[j].joints[mid_2[i]], param_.stride(), grid_x, grid_y, param_sigma(), thre);
+		  putVecMaps(transformed_label + (2 * i) * channelOffset, transformed_label + (2 * i + 1) * channelOffset, count, meta.all_joints[j].joints[mid_1[i]], meta.all_joints[j].joints[mid_2[i]], param_.stride(), grid_x, grid_y, param_.sigma(), thre);
 		}
 	  }
     }
