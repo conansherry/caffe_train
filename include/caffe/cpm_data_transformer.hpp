@@ -145,6 +145,7 @@ class CPMDataTransformer {
     string dataset;
     Size img_size;
     bool isValidation;
+	int numPeople;
     int numOtherPeople;
     int people_index;
     int annolist_index;
@@ -154,6 +155,9 @@ class CPMDataTransformer {
     Point2f objpos; //objpos_x(float), objpos_y (float)
     float scale_self;
     Joints joint_self; //(3*16)
+	
+	vector<Joints> all_joints;
+	vector<cv::Rect> all_rects;
 
     vector<Point2f> objpos_other; //length is numOtherPeople
     vector<float> scale_other; //length is numOtherPeople
@@ -202,7 +206,7 @@ class CPMDataTransformer {
 
   void Transform(const Datum& datum, Dtype* transformed_data);
   void Transform_nv(const Datum& datum, Dtype* transformed_data, Dtype* transformed_label, int cnt);
-  void ReadMetaData(MetaData& meta, const string& data, size_t offset3, size_t offset1);
+  void ReadMetaData(MetaData& meta, const string& data, size_t offset3, size_t offset1, cv::Mat &datum_img);
   void TransformMetaJoints(MetaData& meta);
   void TransformJoints(Joints& joints);
   void clahe(Mat& img, int, int);

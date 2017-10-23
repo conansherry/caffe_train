@@ -140,7 +140,6 @@ void CPMDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
 	const std::string& data = datum.data();
 	std::string img_name = DecodeString(data, 0);
 	LOG(INFO) << "img_name = " << img_name;
-	system("pause");
 	
     batch->data_.Reshape(1, datum.channels(),
         datum.height(), datum.width());
