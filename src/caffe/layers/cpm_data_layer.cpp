@@ -98,7 +98,7 @@ void DecodeFloats(const string& data, size_t idx, Dtype* pf, size_t len) {
   memcpy(pf, const_cast<char*>(&data[idx]), len * sizeof(Dtype));
 }
 
-string DecodeString(const string& data, size_t idx) {
+static string DecodeString(const string& data, size_t idx) {
   string result = "";
   int i = 0;
   while(data[idx+i] != 0){
