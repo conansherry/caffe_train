@@ -531,8 +531,20 @@ float CPMDataTransformer<Dtype>::augmentation_scale(Mat& img_src, Mat& img_temp,
     scale_multiplier = (param_.scale_max() - param_.scale_min()) * dice2 + param_.scale_min(); //linear shear into [scale_min, scale_max]
   }
   //float scale_abs = param_.target_dist()/meta.scale_self;
-  float scale_abs = 368 * param_.target_dist() / (meta.all_rects[select_people].width);
+  float scale_abs;
+  if(meta.all_rects[select_people].width == 0)
+  {
+	LOG(INFO) << "error width " << meta.dataset;
+    scale_abs = 1;
+  }
+  else
+    scale_abs = 368 * param_.target_dist() / (meta.all_rects[select_people].width);
   float scale = scale_abs * scale_multiplier;
+  if(scale * img_src.rows < 1 || scale * img_src.cols < 1)
+  {
+	  LOG(INFO) << "error width " << meta.dataset << " scale = " << scale;
+	  scale = 1;
+  }
   resize(img_src, img_temp, Size(), scale, scale, INTER_CUBIC);
 
   //modify meta data
