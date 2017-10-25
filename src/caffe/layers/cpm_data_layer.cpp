@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <string>
+#inlucde <sstream>
 
 #include "caffe/common.hpp"
 #include "caffe/layers/cpm_data_layer.hpp"
@@ -198,7 +199,8 @@ void CPMDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
 
     reader_.free().push(const_cast<Datum*>(&datum));
   }
-/*
+  
+static int sample_index = 0;
     int num_sample = batch->data_.num();
     LOG(INFO) << "num sample " << num_sample;
     int offset = 368 * 368;
@@ -216,18 +218,26 @@ void CPMDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
   cv::merge(tmp_image, image);
   image = image * 256. + 128.;
   image.convertTo(image, CV_8U); 
-  cv::imwrite("test_data.png", image);
-  cv::Mat heatmap_bg(46, 46, CV_32FC1, top_label + k * 41 * label_offset + 40 * label_offset);
-  cv::Mat tmp;
-  cv::resize(heatmap_bg, tmp, Size(), 8, 8);
-  heatmap_bg = tmp;
-  heatmap_bg = heatmap_bg * 255.;
-  heatmap_bg.convertTo(heatmap_bg, CV_8U);
-  cv::cvtColor(heatmap_bg, heatmap_bg, cv::COLOR_GRAY2BGR);
-  cv::addWeighted(heatmap_bg, 0.5, image, 0.5, 0, heatmap_bg);
-  cv::imwrite("test_label.png", heatmap_bg);
+  std::stringstream ss1;
+  ss1 << sample_index << "_test_data.png";
+  cv::imwrite("test_save/" + ss1.str(), image);
+  for(int l = 0; l < 41; l++)
+  {
+	cv::Mat heatmap(46, 46, CV_32FC1, top_label + k * 41 * label_offset + l * label_offset);
+    cv::Mat tmp;
+    cv::resize(heatmap, heatmap, Size(), 8, 8);
+    heatmap = heatmap * 255.;
+    heatmap.convertTo(heatmap, CV_8U);
+    cv::cvtColor(heatmap, heatmap, cv::COLOR_GRAY2BGR);
+    cv::addWeighted(heatmap, 0.8, image, 0.2, 0, heatmap);
+	std::stringstream ss;
+	ss << sample_index << "_" << l << "_label.png";
+    cv::imwrite("test_save/" + ss.str(), heatmap);
+  }
+
+  sample_index++;
 }
-*/
+
   batch_timer.Stop();
 
   VLOG(2) << "Prefetch batch: " << batch_timer.MilliSeconds() << " ms.";
