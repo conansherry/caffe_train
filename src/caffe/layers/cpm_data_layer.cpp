@@ -227,6 +227,7 @@ static int sample_index = 0;
     cv::Mat tmp;
     cv::resize(heatmap, heatmap, Size(), 8, 8);
     heatmap = heatmap * 255.;
+	heatmap = cv::abs(heatmap);
     heatmap.convertTo(heatmap, CV_8U);
     cv::cvtColor(heatmap, heatmap, cv::COLOR_GRAY2BGR);
     cv::addWeighted(heatmap, 0.8, image, 0.2, 0, heatmap);
@@ -237,6 +238,7 @@ static int sample_index = 0;
 
   sample_index++;
 }
+
 
   batch_timer.Stop();
 
