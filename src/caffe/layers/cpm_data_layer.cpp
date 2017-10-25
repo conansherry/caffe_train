@@ -184,9 +184,9 @@ int offset = 368 * 368;
 int label_offset = 46 * 46;
 for(int k = 0; k < num_sample; k++)
 {
-  cv::Mat tmp_image_b(368, 368, CV_32FC1, top_data + k * 3 * offset); 
-  cv::Mat tmp_image_g(368, 368, CV_32FC1, top_data + (k * 3 + 1) * offset);
-  cv::Mat tmp_image_r(368, 368, CV_32FC1, top_data + (k * 3 + 2) * offset);
+  cv::Mat tmp_image_b(368, 368, CV_32FC1, top_data + k * datum.channels() * offset); 
+  cv::Mat tmp_image_g(368, 368, CV_32FC1, top_data + (k * datum.channels() + 1) * offset);
+  cv::Mat tmp_image_r(368, 368, CV_32FC1, top_data + (k * datum.channels() + 2) * offset);
   std::vector<cv::Mat> tmp_image;
   tmp_image.push_back(tmp_image_b);
   tmp_image.push_back(tmp_image_g);
