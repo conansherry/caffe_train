@@ -219,7 +219,7 @@ static int sample_index = 0;
   image = image * 256. + 128.;
   image.convertTo(image, CV_8U); 
   std::stringstream ss1;
-  ss1 << sample_index << "_test_data.png";
+  ss1 << sample_index << "_test_data.jpg";
   cv::imwrite("test_save/" + ss1.str(), image);
   for(int l = 0; l < 41; l++)
   {
@@ -231,7 +231,7 @@ static int sample_index = 0;
     cv::cvtColor(heatmap, heatmap, cv::COLOR_GRAY2BGR);
     cv::addWeighted(heatmap, 0.8, image, 0.2, 0, heatmap);
 	std::stringstream ss;
-	ss << sample_index << "_" << l << "_label.png";
+	ss << sample_index << "_" << l << "_label.jpg";
     cv::imwrite("test_save/" + ss.str(), heatmap);
   }
 
