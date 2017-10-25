@@ -645,8 +645,6 @@ bool CPMDataTransformer<Dtype>::augmentation_flip(Mat& img_src, Mat& img_aug, Ma
     LOG(INFO) << "Unhandled exception!!!!!!";
   }
 
-doflip = 1;
-
   if(doflip){
     flip(img_src, img_aug, 1);
     int w = img_src.cols;
