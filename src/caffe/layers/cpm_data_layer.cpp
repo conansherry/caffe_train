@@ -5,7 +5,7 @@
 
 #include <vector>
 #include <string>
-#inlucde <sstream>
+#include <sstream>
 
 #include "caffe/common.hpp"
 #include "caffe/layers/cpm_data_layer.hpp"
