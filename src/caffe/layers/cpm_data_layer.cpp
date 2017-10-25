@@ -178,7 +178,7 @@ void CPMDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
 
     reader_.free().push(const_cast<Datum*>(&datum));
   }
-  
+  /*
 static int sample_index = 0;
 int num_sample = batch->data_.num();
 LOG(INFO) << "num sample " << num_sample;
@@ -217,6 +217,7 @@ for(int k = 0; k < num_sample; k++)
 
   sample_index++;
 }
+*/
   
   batch_timer.Stop();
 
