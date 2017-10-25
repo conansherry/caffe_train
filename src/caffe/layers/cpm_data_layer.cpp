@@ -132,10 +132,12 @@ void CPMDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
   if (this->output_labels_) {
     top_label = batch->label_.mutable_cpu_data();
   }
+  int datum_channels;
   for (int item_id = 0; item_id < batch_size; ++item_id) {
     // get a blob
     timer.Start();
     Datum& datum = *(reader_.full().pop("Waiting for data"));
+	datum_channels = datum.channels();
     deque_time += timer.MicroSeconds();
 
     timer.Start();
@@ -184,9 +186,9 @@ int offset = 368 * 368;
 int label_offset = 46 * 46;
 for(int k = 0; k < num_sample; k++)
 {
-  cv::Mat tmp_image_b(368, 368, CV_32FC1, top_data + k * datum.channels() * offset); 
-  cv::Mat tmp_image_g(368, 368, CV_32FC1, top_data + (k * datum.channels() + 1) * offset);
-  cv::Mat tmp_image_r(368, 368, CV_32FC1, top_data + (k * datum.channels() + 2) * offset);
+  cv::Mat tmp_image_b(368, 368, CV_32FC1, top_data + k * datum_channels * offset); 
+  cv::Mat tmp_image_g(368, 368, CV_32FC1, top_data + (k * datum_channels + 1) * offset);
+  cv::Mat tmp_image_r(368, 368, CV_32FC1, top_data + (k * datum_channels + 2) * offset);
   std::vector<cv::Mat> tmp_image;
   tmp_image.push_back(tmp_image_b);
   tmp_image.push_back(tmp_image_g);
