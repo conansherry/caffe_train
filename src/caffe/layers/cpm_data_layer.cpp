@@ -2,6 +2,7 @@
 #include <opencv2/core/core.hpp>
 #endif  // USE_OPENCV
 #include <stdint.h>
+#include <sstream>
 
 #include <vector>
 #include <string>
@@ -175,6 +176,46 @@ void CPMDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
 
     reader_.free().push(const_cast<Datum*>(&datum));
   }
+  
+static int sample_index = 0;
+int num_sample = batch->data_.num();
+LOG(INFO) << "num sample " << num_sample;
+int offset = 368 * 368;
+int label_offset = 46 * 46;
+for(int k = 0; k < num_sample; k++)
+{
+  cv::Mat tmp_image_b(368, 368, CV_32FC1, top_data + k * 3 * offset); 
+  cv::Mat tmp_image_g(368, 368, CV_32FC1, top_data + (k * 3 + 1) * offset);
+  cv::Mat tmp_image_r(368, 368, CV_32FC1, top_data + (k * 3 + 2) * offset);
+  std::vector<cv::Mat> tmp_image;
+  tmp_image.push_back(tmp_image_b);
+  tmp_image.push_back(tmp_image_g);
+  tmp_image.push_back(tmp_image_r);
+  cv::Mat image;
+  cv::merge(tmp_image, image);
+  image = image * 256. + 128.;
+  image.convertTo(image, CV_8U); 
+  std::stringstream ss1;
+  ss1 << sample_index << "_test_data.jpg";
+  cv::imwrite("test_save/" + ss1.str(), image);
+  for(int l = 57; l < 114; l++)
+  {
+	cv::Mat heatmap(46, 46, CV_32FC1, top_label + k * 114 * label_offset + l * label_offset);
+    cv::Mat tmp;
+    cv::resize(heatmap, heatmap, Size(), 8, 8);
+    heatmap = heatmap * 255.;
+	heatmap = cv::abs(heatmap);
+    heatmap.convertTo(heatmap, CV_8U);
+    cv::cvtColor(heatmap, heatmap, cv::COLOR_GRAY2BGR);
+    cv::addWeighted(heatmap, 0.8, image, 0.2, 0, heatmap);
+	std::stringstream ss;
+	ss << sample_index << "_" << l << "_label.jpg";
+    cv::imwrite("test_save/" + ss.str(), heatmap);
+  }
+
+  sample_index++;
+}
+  
   batch_timer.Stop();
 
   VLOG(2) << "Prefetch batch: " << batch_timer.MilliSeconds() << " ms.";
